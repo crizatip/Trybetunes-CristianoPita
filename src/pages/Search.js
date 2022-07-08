@@ -1,9 +1,19 @@
 import React from 'react';
+import Header from './Header';
+import { getUser } from '../services/userAPI';
 
 class Search extends React.Component {
+  getUserHandler = async () => {
+    const existentUser = await getUser();
+    return existentUser;
+  };
+
   render() {
     return (
-      <div data-testid="page-search"> </div>
+      <>
+        <Header />
+        <div data-testid="page-search"> </div>
+      </>
     );
   }
 }

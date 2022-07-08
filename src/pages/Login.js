@@ -47,25 +47,27 @@ class Login extends React.Component {
       <div data-testid="page-login">
         {userCreated && <Redirect to="/search" /> }
         {loading && <Loading /> }
-        <form id="formLogin" onSubmit={ this.handleSubmit }>
-          <input
-            type="text"
-            data-testid="login-name-input"
-            name="nameUser"
-            id="nameUser"
-            onChange={ this.handleChange }
-            value={ nameUser }
-          />
-          <button
-            type="submit"
-            form="formLogin"
-            data-testid="login-submit-button"
-            disabled={ buttonDisabled }
-            onClick={ this.userValidate }
-          >
-            Entrar
-          </button>
-        </form>
+        {!loading && (
+          <form id="formLogin" onSubmit={ this.handleSubmit }>
+            <input
+              type="text"
+              data-testid="login-name-input"
+              name="nameUser"
+              id="nameUser"
+              onChange={ this.handleChange }
+              value={ nameUser }
+            />
+            <button
+              type="submit"
+              form="formLogin"
+              data-testid="login-submit-button"
+              disabled={ buttonDisabled }
+              onClick={ this.userValidate }
+            >
+              Entrar
+            </button>
+          </form>
+        )}
       </div>
     );
   }
