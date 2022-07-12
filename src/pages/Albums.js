@@ -40,23 +40,23 @@ class Albums extends React.Component {
             {!albumName && <p>Collection Name</p>}
           </div>
           { musicArray.map((musics, index) => (
-            index > 0
-           && <div
-             key={ index }
-             data-testid="audio-component"
-           >
-             <p>{`Track Name ${index}`}</p>
-             <audio
-               src={ musics.previewUrl }
-               controls
-             >
-               <track kind="captions" />
-               O seu navegador não suporta o elemento
-               {' '}
-               {' '}
-               <code>audio</code>
-             </audio>
-           </div>
+            index > 0 && (
+              <div
+                key={ index }
+                data-testid="audio-component"
+              >
+                <p>{`Track Name ${index}`}</p>
+                <audio
+                  src={ musics.previewUrl }
+                  controls
+                >
+                  <track kind="captions" />
+                  O seu navegador não suporta o elemento
+                  {' '}
+                  {' '}
+                  <code>audio</code>
+                </audio>
+              </div>)
           ))}
 
         </div>
