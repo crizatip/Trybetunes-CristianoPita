@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Header from './Header';
 import getMusics from '../services/musicsAPI';
 import Loading from './Loading';
+import MusicCard from '../Components/MusicCard';
 
 class Albums extends React.Component {
   constructor() {
@@ -35,20 +36,16 @@ class Albums extends React.Component {
     const { target } = event;
     const { checked, value } = target;
     const { favorites, musicArray } = this.state;
-    console.log(value);
     if (checked) {
       this.setState((prevState) => ({
         favorites: [...prevState.favorites, parseInt(value, 10)],
       }), () => {
         const findFav = musicArray.find((music) => music.trackId === parseInt(value, 10));
-        console.log(findFav);
-        this.favHandle(findFav);
+        console.log(findFav.trackId);
+        this.favHandle(findFav.trackId);
       });
     } else {
-      const a = favorites.filter((marked) => {
-        console.log(marked);
-        return marked !== parseInt(value, 10);
-      });
+      const a = favorites.filter((marked) => marked !== parseInt(value, 10));
 
       this.setState(() => ({
         favorites: a,
@@ -63,7 +60,7 @@ class Albums extends React.Component {
   }
 
   render() {
-    const { musicArray, artistName, albumName, favorites, loading } = this.state;
+    const { musicArray, artistName, albumName, loading } = this.state;
     return (
       <>
         <Header />
@@ -81,30 +78,7 @@ class Albums extends React.Component {
                 key={ index }
                 data-testid="audio-component"
               >
-                <p>{`Track Name ${index}`}</p>
-                <audio
-                  src={ musics.previewUrl }
-                  controls
-                >
-                  <track kind="captions" />
-                  O seu navegador não suporta o elemento
-                  {' '}
-                  {' '}
-                  <code>audio</code>
-                </audio>
-                <label
-                  htmlFor="favorites"
-                >
-                  Favorita
-                  <input
-                    data-testid={ `checkbox-music-${musics.trackId}` }
-                    type="checkbox"
-                    name={ `favorite${index}` }
-                    value={ musics.trackId }
-                    checked={ favorites.some((song) => song === musics.trackId) }
-                    onChange={ this.handleInputChange }
-                  />
-                </label>
+                <MusicCard musicArray = { musics }/>
               </div> /* */)
           ))}
 
