@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { addSong } from '../services/favoriteSongsAPI';
 import Header from './Header';
 import getMusics from '../services/musicsAPI';
+import Loading from './Loading';
 
 class Albums extends React.Component {
   constructor() {
@@ -11,6 +13,8 @@ class Albums extends React.Component {
       musicArray: [],
       artistName: '',
       albumName: '',
+      favorites: [],
+      loading: false,
     };
   }
 
@@ -27,8 +31,39 @@ class Albums extends React.Component {
     this.setState({ artistName: artist.artistName, albumName: artist.collectionName });
   }
 
+  handleInputChange = (event) => {
+    const { target } = event;
+    const { checked, value } = target;
+    const { favorites, musicArray } = this.state;
+    console.log(value);
+    if (checked) {
+      this.setState((prevState) => ({
+        favorites: [...prevState.favorites, parseInt(value, 10)],
+      }), () => {
+        const findFav = musicArray.find((music) => music.trackId === parseInt(value, 10));
+        console.log(findFav);
+        this.favHandle(findFav);
+      });
+    } else {
+      const a = favorites.filter((marked) => {
+        console.log(marked);
+        return marked !== parseInt(value, 10);
+      });
+
+      this.setState(() => ({
+        favorites: a,
+      }));
+    }
+  }
+
+  favHandle = async (song) => {
+    this.setState({ loading: true });
+    await addSong(song);
+    this.setState({ loading: false });
+  }
+
   render() {
-    const { musicArray, artistName, albumName } = this.state;
+    const { musicArray, artistName, albumName, favorites, loading } = this.state;
     return (
       <>
         <Header />
@@ -39,6 +74,7 @@ class Albums extends React.Component {
           <div data-testid="album-name">
             {!albumName && <p>Collection Name</p>}
           </div>
+          {loading && <Loading />}
           { musicArray.map((musics, index) => (
             index > 0 && (
               <div
@@ -56,7 +92,20 @@ class Albums extends React.Component {
                   {' '}
                   <code>audio</code>
                 </audio>
-              </div>)
+                <label
+                  htmlFor="favorites"
+                >
+                  Favorita
+                  <input
+                    data-testid={ `checkbox-music-${musics.trackId}` }
+                    type="checkbox"
+                    name={ `favorite${index}` }
+                    value={ musics.trackId }
+                    checked={ favorites.some((song) => song === musics.trackId) }
+                    onChange={ this.handleInputChange }
+                  />
+                </label>
+              </div> /* */)
           ))}
 
         </div>
