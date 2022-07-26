@@ -4,7 +4,7 @@ import Header from './Header';
 import getMusics from '../services/musicsAPI';
 import Loading from './Loading';
 import MusicCard from '../Components/MusicCard';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 
 class Albums extends React.Component {
   constructor() {
@@ -24,28 +24,34 @@ class Albums extends React.Component {
     const musics = await getMusics(id);
     this.setState({ musicArray: musics });
     const { musicArray } = this.state;
-    let artist = '';
-    if (musicArray[2] !== undefined) {
-      [, artist] = Object.values(musicArray);
-    }
-    console.log(artist);
-    this.setState({ artistName: artist.artistName, albumName: artist.collectionName });
     this.getfavoriteHandle();
   }
 
   getfavoriteHandle = async () => {
     const getFav = await getFavoriteSongs();
-    this.setState({ getFavoritesArray: getFav });
+    this.setState({ getFavoritesArray: getFav, loading: false });
+  }
+
+  removeHande = async (music) => {
+    this.setState({ loading: true });
+    await removeSong(music);
+    this.getfavoriteHandle();
+    // this.setState({ loading: false });
   }
 
   handleInputChange = (event, trackId) => {
     const { target } = event;
     const { checked } = target;
-    const { musicArray } = this.state;
+    const { musicArray, getFavoritesArray } = this.state;
     if (checked) {
       const [a] = musicArray.filter((song) => song.trackId === trackId);
       console.log(trackId);
       this.favHandle(a);
+    }else {
+      const b = getFavoritesArray.filter((song) => song.trackId === trackId);
+      console.log(b[0]);
+      console.log(getFavoritesArray);
+      this.removeHande(b[0]);
     }
   }
 
@@ -54,7 +60,7 @@ class Albums extends React.Component {
     console.log(trackId);
     await addSong(trackId);
     this.getfavoriteHandle();
-    this.setState({ loading: false });
+    // this.setState({ loading: false });
   }
 
   render() {
@@ -74,7 +80,6 @@ class Albums extends React.Component {
               index > 0 && (
                 <div
                   key={ index }
-                  data-testid="audio-component"
                 >
                   <MusicCard
                     musicArray={ musics }

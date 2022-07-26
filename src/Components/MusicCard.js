@@ -41,10 +41,7 @@ class MusicCard extends React.Component {
 
 imputUpdate = () => {
   const { musicArray: musics, favorited } = this.props;
-  console.log(musics.trackId);
-  console.log(favorited);
   const favoriteFinder = favorited.some((music) => music.trackId === musics.trackId);
-  console.log(favoriteFinder);
   return favoriteFinder;
 }
 
