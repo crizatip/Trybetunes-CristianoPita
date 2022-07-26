@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Header from './Header';
 import getMusics from '../services/musicsAPI';
 import Loading from './Loading';
 import MusicCard from '../Components/MusicCard';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Albums extends React.Component {
   constructor() {
@@ -14,8 +14,8 @@ class Albums extends React.Component {
       musicArray: [],
       artistName: '',
       albumName: '',
-      favorites: [],
       loading: false,
+      getFavoritesArray: [],
     };
   }
 
@@ -30,59 +30,61 @@ class Albums extends React.Component {
     }
     console.log(artist);
     this.setState({ artistName: artist.artistName, albumName: artist.collectionName });
+    this.getfavoriteHandle();
   }
 
-  handleInputChange = (event) => {
-    const { target } = event;
-    const { checked, value } = target;
-    const { favorites, musicArray } = this.state;
-    if (checked) {
-      this.setState((prevState) => ({
-        favorites: [...prevState.favorites, parseInt(value, 10)],
-      }), () => {
-        const findFav = musicArray.find((music) => music.trackId === parseInt(value, 10));
-        console.log(findFav.trackId);
-        this.favHandle(findFav.trackId);
-      });
-    } else {
-      const a = favorites.filter((marked) => marked !== parseInt(value, 10));
+  getfavoriteHandle = async () => {
+    const getFav = await getFavoriteSongs();
+    this.setState({ getFavoritesArray: getFav });
+  }
 
-      this.setState(() => ({
-        favorites: a,
-      }));
+  handleInputChange = (event, trackId) => {
+    const { target } = event;
+    const { checked } = target;
+    const { musicArray } = this.state;
+    if (checked) {
+      const [a] = musicArray.filter((song) => song.trackId === trackId);
+      console.log(trackId);
+      this.favHandle(a);
     }
   }
 
-  favHandle = async (song) => {
+  favHandle = async (trackId) => {
     this.setState({ loading: true });
-    await addSong(song);
+    console.log(trackId);
+    await addSong(trackId);
+    this.getfavoriteHandle();
     this.setState({ loading: false });
   }
 
   render() {
-    const { musicArray, artistName, albumName, loading } = this.state;
+    const { musicArray, artistName, albumName, loading, getFavoritesArray } = this.state;
     return (
       <>
         <Header />
-        <div data-testid="page-album">
-          <div data-testid="artist-name">
-            {!artistName && <p>Artist Name</p> }
-          </div>
-          <div data-testid="album-name">
-            {!albumName && <p>Collection Name</p>}
-          </div>
-          {loading && <Loading />}
-          { musicArray.map((musics, index) => (
-            index > 0 && (
-              <div
-                key={ index }
-                data-testid="audio-component"
-              >
-                <MusicCard musicArray = { musics }/>
-              </div> /* */)
-          ))}
+        { loading ? <Loading /> : (
+          <div data-testid="page-album">
+            <div data-testid="artist-name">
+              {!artistName && <p>Artist Name</p> }
+            </div>
+            <div data-testid="album-name">
+              {!albumName && <p>Collection Name</p>}
+            </div>
+            {musicArray.map((musics, index) => (
+              index > 0 && (
+                <div
+                  key={ index }
+                  data-testid="audio-component"
+                >
+                  <MusicCard
+                    musicArray={ musics }
+                    favorited={ getFavoritesArray }
+                    handleInputChange={ this.handleInputChange }
+                  />
+                </div> /* */)
+            ))}
 
-        </div>
+          </div>)}
       </>
     );
   }
