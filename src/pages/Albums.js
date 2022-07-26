@@ -23,7 +23,6 @@ class Albums extends React.Component {
     const { match: { params: { id } } } = this.props;
     const musics = await getMusics(id);
     this.setState({ musicArray: musics });
-    const { musicArray } = this.state;
     this.getfavoriteHandle();
   }
 
@@ -47,7 +46,7 @@ class Albums extends React.Component {
       const [a] = musicArray.filter((song) => song.trackId === trackId);
       console.log(trackId);
       this.favHandle(a);
-    }else {
+    } else {
       const b = getFavoritesArray.filter((song) => song.trackId === trackId);
       console.log(b[0]);
       console.log(getFavoritesArray);
