@@ -81,12 +81,12 @@ class ProfileEdit extends React.Component {
   handleSubmit = (event) => {
     event.preventDefault();
     this.updateUserHandler();
-    this.setState({ redirectHandle: true });
+    this.setState({ redirect: true });
   }
 
   render() {
     const { loading, names: name, emails: email, descriptions: description,
-      images: image, disabled, redirectHandle } = this.state;
+      images: image, disabled, redirect } = this.state;
     return (
 
       <>
@@ -137,7 +137,7 @@ class ProfileEdit extends React.Component {
               {' '}
 
             </button>
-            { redirectHandle && <Redirect to="/profile" /> }
+            { redirect && <Redirect to="/carteira" /> }
           </>)}
       </>
     );
